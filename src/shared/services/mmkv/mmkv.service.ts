@@ -1,6 +1,6 @@
-import { MMKV } from 'react-native-mmkv';
+import { createMMKV } from 'react-native-mmkv';
 
-const storage = new MMKV();
+export const storage = createMMKV();
 
 export const MMKVStorageService = {
   setItem: (name: string, value: string) => storage.set(name, value),
@@ -8,5 +8,5 @@ export const MMKVStorageService = {
     const value = storage.getString(name);
     return value ?? null;
   },
-  removeItem: (name: string) => storage.delete(name),
+  removeItem: (name: string) => storage.remove(name),
 };
