@@ -6,7 +6,7 @@ import { useStyles } from './icon.styles';
 
 const AppIconComponent = ({
                             name,
-                            color = 'dark',
+                            color = 'black',
                             size = 28,
                             style,
                             enable_color = true,

@@ -38,6 +38,7 @@ export const initLanguage = () => {
     language = systemLanguage;
   }
 
+  // @ts-ignore
   return i18n
     .use(initReactI18next)
     .init({

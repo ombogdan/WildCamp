@@ -1,8 +1,18 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, Pressable, ScrollView } from 'react-native';
+import {
+  View,
+  Text,
+  TextInput,
+  Pressable,
+  ScrollView,
+  TouchableOpacity,
+} from 'react-native';
 import MapView, { PROVIDER_GOOGLE } from 'react-native-maps';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { AppIcon } from 'assets/index';
+import { APP_ICONS } from 'assets/icon.data';
 import { useStyles } from './home.styles';
+import {navigate} from "shared/navigation/root-navigator.config";
 
 type CampType = 'tent' | 'hammock' | 'car';
 
@@ -13,10 +23,14 @@ const INITIAL_REGION = {
   longitudeDelta: 13,
 };
 
-const FILTERS: { key: CampType; label: string }[] = [
-  { key: 'tent', label: 'Намет' },
-  { key: 'hammock', label: 'Гамак' },
-  { key: 'car', label: 'Авто' },
+const FILTERS: {
+  key: CampType;
+  label: string;
+  icon: keyof typeof APP_ICONS;
+}[] = [
+  { key: 'tent', label: 'Намет', icon: 'tent' },
+  { key: 'hammock', label: 'Гамак', icon: 'hammock' },
+  { key: 'car', label: 'Авто', icon: 'truck' },
 ];
 
 const Home = () => {
@@ -37,14 +51,17 @@ const Home = () => {
 
       <View style={[styles.topOverlay, { top: insets.top + 12 }]}>
         <View style={styles.searchBar}>
-          <Text style={styles.searchIcon}>⌕</Text>
+          <AppIcon name="search" color="forest" size={20} />
           <TextInput
             style={styles.searchInput}
-            placeholder="Пошук місць"
-            placeholderTextColor="#8A9387"
+            placeholder="Пошук кемпінгу"
+            placeholderTextColor="#9AA08E"
             value={query}
             onChangeText={setQuery}
           />
+          <TouchableOpacity style={styles.filterBackground}>
+            <AppIcon name="filter" color="forest" size={18} />
+          </TouchableOpacity>
         </View>
 
         <ScrollView
@@ -60,6 +77,11 @@ const Home = () => {
                 onPress={() => setActiveFilter(active ? null : f.key)}
                 style={[styles.chip, active && styles.chipActive]}
               >
+                <AppIcon
+                  name={f.icon}
+                  color={active ? 'white' : 'forest'}
+                  size={20}
+                />
                 <Text
                   style={[styles.chipText, active && styles.chipTextActive]}
                 >
@@ -74,7 +96,7 @@ const Home = () => {
       <Pressable
         style={[styles.fab, { bottom: insets.bottom + 24 }]}
         onPress={() => {
-          // тут пізніше navigation.navigate('AddPlace')
+         navigate("AddCampingPace");
         }}
       >
         <Text style={styles.fabIcon}>＋</Text>
