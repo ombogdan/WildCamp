@@ -146,3 +146,4 @@ export const AMENITIES: {
     icon: 'trash',
   },
 ];
+export const KYIV = { latitude: 50.45, longitude: 30.52 };

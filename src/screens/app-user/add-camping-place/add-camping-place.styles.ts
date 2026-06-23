@@ -195,5 +195,17 @@ export const useStyles = createStyles(({ theme, scale }: any) =>
       color: theme.palette.white,
       marginLeft: scale(10),
     },
+    centerPin: {
+      position: 'absolute',
+      top: '50%',
+      left: '50%',
+      marginLeft: -18,
+      marginTop: -36,
+    },
+    loader: {
+      height: scale(65),
+      width: scale(65),
+      top: scale(3)
+    },
   }),
 );

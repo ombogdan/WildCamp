@@ -1,5 +1,7 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
+  PermissionsAndroid,
+  Platform,
   SafeAreaView,
   Text,
   TextInput,
@@ -10,53 +12,138 @@ import { supabase } from 'shared/supabase/supabase';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { useTheme } from 'theme/ThemeProvider';
 import { AppIcon } from 'assets/index';
-import MapView from 'react-native-maps';
-import { AMENITIES, CAMPING_TYPES } from 'constants/index';
+import MapView, { Region } from 'react-native-maps';
+import {
+  AMENITIES,
+  CAMPING_TYPES,
+  KYIV,
+  LOTTIE_WHITE_LOADER,
+} from 'constants/index';
 import { Box } from 'ui-kit/box';
+import Geolocation from '@react-native-community/geolocation';
+import { storage } from 'shared/services/mmkv';
+import Toast from 'react-native-toast-message';
+import { goBack } from 'shared/navigation/root-navigator.config';
+import wait from 'utils/wait';
+import Lottie from 'lottie-react-native';
 import { useStyles } from './add-camping-place.styles';
 
 const AddCampingPlace = () => {
   const styles = useStyles();
   const { theme } = useTheme();
+  const mapRef = useRef<MapView>(null);
+
+  const getLastRegion = () => {
+    const raw = storage.getString('lastRegion');
+    return raw ? JSON.parse(raw) : KYIV;
+  };
+
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [rating, setRating] = useState(0);
-
   const [campingTypes, setCampingTypes] = useState<string[]>([]);
   const [amenities, setAmenities] = useState<string[]>([]);
   const [photos, setPhotos] = useState<any[]>([]);
-  const [selectedLocation, setSelectedLocation] = useState<{
-    latitude: number;
-    longitude: number;
-  } | null>(null);
+  const [submitting, setSubmitting] = useState<boolean>(false);
+  const [initialRegion] = useState(() => ({
+    ...getLastRegion(),
+    latitudeDelta: 0.05,
+    longitudeDelta: 0.05,
+  }));
+  const [selectedLocation, setSelectedLocation] = useState({
+    latitude: initialRegion.latitude,
+    longitude: initialRegion.longitude,
+  });
+
+  useEffect(() => {
+    const requestAndGetLocation = async () => {
+      try {
+        // дозвіл
+        if (Platform.OS === 'android') {
+          const granted = await PermissionsAndroid.request(
+            PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+          );
+          if (granted !== PermissionsAndroid.RESULTS.GRANTED) {
+            setSelectedLocation(KYIV); // відмовив — ставимо запасний центр
+            return;
+          }
+        } else {
+          await Geolocation.requestAuthorization();
+        }
+
+        // координати
+        Geolocation.getCurrentPosition(
+          (pos) => {
+            mapRef.current?.animateToRegion(
+              {
+                latitude: pos.coords.latitude,
+                longitude: pos.coords.longitude,
+                latitudeDelta: 0.05,
+                longitudeDelta: 0.05,
+              },
+              600,
+            );
+          },
+          () => {}, // помилка — лишаємось на initialRegion (остання точка)
+          { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 },
+        );
+      } catch {
+        setSelectedLocation(KYIV);
+      }
+    };
+
+    requestAndGetLocation();
+  }, []);
+
+  const toggleItem = (
+    id: string,
+    setList: React.Dispatch<React.SetStateAction<string[]>>,
+  ) => {
+    setList((prev) =>
+      prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id],
+    );
+  };
 
   const handleAddNewCampingPlace = async () => {
+    if (submitting) {
+      return;
+    }
+    setSubmitting(true);
+
     if (!name.trim()) {
+      Toast.show({ type: 'error', text1: 'Вкажіть назву кемпінгу' });
+      setSubmitting(false);
       return;
     }
-
     if (!rating) {
+      Toast.show({ type: 'error', text1: 'Поставте оцінку' });
+      setSubmitting(false);
       return;
     }
 
-    if (!selectedLocation) {
-      return;
-    }
-
-    await supabase.from('camping_places').insert({
-      name,
-      description,
+    const { error } = await supabase.from('camping_places').insert({
+      name: name.trim(),
+      description: description.trim() || null,
       rating,
-
       latitude: selectedLocation.latitude,
       longitude: selectedLocation.longitude,
-
       camping_types: campingTypes,
       amenities,
-
-      status: 'pending',
-      created_at: new Date(),
     });
+    setSubmitting(false);
+
+    if (error) {
+      Toast.show({
+        type: 'error',
+        text1: 'Не вдалося зберегти',
+        text2: error.message,
+      });
+      return;
+    }
+
+    Toast.show({ type: 'success', text1: 'Місце надіслано на модерацію' });
+    await wait(1500);
+    goBack();
   };
 
   return (
@@ -98,18 +185,32 @@ const AddCampingPlace = () => {
           </View>
           <View style={styles.mapContainer}>
             <MapView
+              ref={mapRef}
               style={styles.map}
               provider="google"
               mapType="satellite"
-              initialRegion={{
-                latitude: 50.45,
-                longitude: 30.52,
-                latitudeDelta: 0.05,
-                longitudeDelta: 0.05,
+              initialRegion={initialRegion}
+              onRegionChangeComplete={(region: Region) => {
+                const coords = {
+                  latitude: region.latitude,
+                  longitude: region.longitude,
+                };
+                setSelectedLocation(coords);
+                storage.set('lastRegion', JSON.stringify(coords));
               }}
             />
-            {/* custom marker */}
+            <View style={styles.centerPin} pointerEvents="none">
+              <AppIcon name="pin" size={36} color="none" />
+            </View>
           </View>
+          {selectedLocation && (
+            <View style={styles.coordsRow}>
+              <Text style={styles.coordsText}>
+                {selectedLocation.latitude.toFixed(5)},{' '}
+                {selectedLocation.longitude.toFixed(5)}
+              </Text>
+            </View>
+          )}
 
           <View style={styles.section}>
             <Text style={styles.label}>Опис</Text>
@@ -155,6 +256,7 @@ const AddCampingPlace = () => {
               return (
                 <TouchableOpacity
                   key={item.id}
+                  onPress={() => toggleItem(item.id, setCampingTypes)}
                   style={[
                     styles.cardContainer,
                     !selected && { borderColor: theme.palette.inputBorder },
@@ -187,7 +289,11 @@ const AddCampingPlace = () => {
             {AMENITIES.map((item) => {
               const selected = amenities.includes(item.id);
               return (
-                <TouchableOpacity key={item.id} style={styles.amenityCard}>
+                <TouchableOpacity
+                  key={item.id}
+                  style={styles.amenityCard}
+                  onPress={() => toggleItem(item.id, setAmenities)}
+                >
                   <Box ml={10}>
                     <AppIcon
                       name={selected ? 'checkBox' : 'checkBoxUnchecked'}
@@ -217,10 +323,22 @@ const AddCampingPlace = () => {
           style={styles.publishButton}
           onPress={handleAddNewCampingPlace}
         >
-          <AppIcon name="check" size={20} color="white" />
-          <Text style={styles.publishText}>Опублікувати</Text>
+          {!submitting ? (
+            <Box direction="row">
+              <AppIcon name="check" size={20} color="white" />
+              <Text style={styles.publishText}>Опублікувати</Text>
+            </Box>
+          ) : (
+            <Lottie
+              style={styles.loader}
+              source={LOTTIE_WHITE_LOADER}
+              autoPlay
+              loop
+            />
+          )}
         </TouchableOpacity>
       </View>
+      <Toast />
     </SafeAreaView>
   );
 };
