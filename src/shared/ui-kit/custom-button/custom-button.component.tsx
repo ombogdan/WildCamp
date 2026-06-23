@@ -22,9 +22,9 @@ const CustomButtonComponent = ({
                                }: ButtonProps) => {
   const styles = useStyles({disabled, title, secondary: variant === BUTTON_VARIANTS.secondary});
   const {theme} = useTheme();
-  let color: string = theme.palette.dark;
-  let btnBackgroundColor: string = theme.palette.accent;
-  let borderColor: string = theme.palette.accent;
+  let color: string = theme.palette.black;
+  let btnBackgroundColor: string = theme.palette.white;
+  let borderColor: string = theme.palette.forest;
   const loader: string = LOTTIE_BLACK_LOADER;
 
   const defineBtnStyle = (prs: { pressed: boolean }) => {
@@ -35,19 +35,19 @@ const CustomButtonComponent = ({
         if (!disabled) {
           color = theme.palette.white;
           btnBackgroundColor = pressed
-            ? theme.palette.blue
-            : theme.palette.blueDark;
+            ? theme.palette.forest
+            : theme.palette.forest;
         } else {
-          btnBackgroundColor = theme.palette.secondaryGray;
+          btnBackgroundColor = theme.palette.forest;
         }
         break;
       }
       case BUTTON_VARIANTS.secondary: {
         if (!disabled) {
           btnBackgroundColor = pressed
-            ? theme.palette.secondaryGray
+            ? theme.palette.forest
             : theme.palette.white;
-          borderColor = theme.palette.secondaryGray;
+          borderColor = theme.palette.forest;
         }
         break;
       }
@@ -66,13 +66,13 @@ const CustomButtonComponent = ({
         if (!disabled) {
           color = theme.palette.white;
         } else {
-          color = theme.palette.black50;
+          color = theme.palette.forest;
         }
         break;
       }
       case BUTTON_VARIANTS.secondary: {
         if (!disabled) {
-          color = pressed ? theme.palette.blueDark : theme.palette.blueDark;
+          color = pressed ? theme.palette.forest : theme.palette.forest;
         }
         break;
       }

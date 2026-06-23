@@ -72,7 +72,7 @@ export const CAMPING_TYPES: {
     description: 'Рівні майданчики під намет',
   },
   {
-    id: 'tarp',
+    id: 'hammock',
     title: 'Тент / гамак',
     icon: 'hammock',
     description: 'Дерева для розтяжок',
@@ -147,3 +147,5 @@ export const AMENITIES: {
   },
 ];
 export const KYIV = { latitude: 50.45, longitude: 30.52 };
+export const CLUSTER_THRESHOLD = 2;
+export const CLUSTER_MIN_DELTA = 0.5;

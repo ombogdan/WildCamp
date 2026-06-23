@@ -22,4 +22,6 @@ export const APP_ICONS = Object.freeze({
     'water': require('shared/assets/icons/water.png'),
     'check': require('shared/assets/icons/check.png'),
     'pin': require('shared/assets/icons/pin.png'),
+    'help': require('shared/assets/icons/help.png'),
+    'camping': require('shared/assets/icons/camping.png'),
 });
