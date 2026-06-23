@@ -1,18 +1,9 @@
-import {Dimensions} from "react-native";
-import {MMKVStorageService} from "shared/services/mmkv";
+import { Dimensions } from 'react-native';
+import { APP_ICONS } from 'assets/icon.data';
 
-export const SCREEN_WIDTH = Dimensions.get("window").width;
-export const SCREEN_HEIGHT = Dimensions.get("window").height;
-export const TERMS_AND_CONDITIONS_LINK = "";
-export const PRIVACY_POLICY_LINK = "";
-export const HIT_SLOP = {
-  left: 10,
-  right: 10,
-  bottom: 10,
-  top: 10,
-}
+export const SCREEN_WIDTH = Dimensions.get('window').width;
+export const SCREEN_HEIGHT = Dimensions.get('window').height;
 
-export const emailRegexp = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;
 export const BUTTON_VARIANTS = {
   primary: 'primary',
   secondary: 'secondary',
@@ -20,7 +11,6 @@ export const BUTTON_VARIANTS = {
 export const LOTTIE_BLACK_LOADER = require('shared/assets/lottie/loader-black.json');
 export const LOTTIE_WHITE_LOADER = require('shared/assets/lottie/loader-white.json');
 export const LOTTIE_BLUE_LOADER = require('shared/assets/lottie/loader-blue.json');
-
 
 export const FONT_SIZE = {
   /** xs = 10 */
@@ -35,7 +25,7 @@ export const FONT_SIZE = {
   xl: 20,
   /** xxl = 24 */
   xxl: 24,
-}
+};
 
 export const SIZE = {
   /** xs = 2 */
@@ -58,12 +48,101 @@ export const SIZE = {
   xxl: 28,
   /** x3l = 36 */
   x3l: 36,
-}
+};
+
 export enum AppLanguages {
   En = 'en',
-  Fr = 'fr',
+  Uk = 'uk',
 }
-export const MASTER_CODE = 7492;
+
 export enum MMKVStorageKeys {
   Language = 'Language',
 }
+
+export const CAMPING_TYPES: {
+  id: string;
+  title: string;
+  icon: keyof typeof APP_ICONS;
+  description: string;
+}[] = [
+  {
+    id: 'tent',
+    title: 'Намети',
+    icon: 'tent',
+    description: 'Рівні майданчики під намет',
+  },
+  {
+    id: 'tarp',
+    title: 'Тент / гамак',
+    icon: 'hammock',
+    description: 'Дерева для розтяжок',
+  },
+  {
+    id: 'car',
+    title: 'Авто-кемпінг',
+    icon: 'truck',
+    description: 'Можна підʼїхати авто',
+  },
+];
+
+export const AMENITIES: {
+  id: string;
+  title: string;
+  icon: keyof typeof APP_ICONS;
+}[] = [
+  {
+    id: 'toilet',
+    title: 'Туалет',
+    icon: 'toilet-paper',
+  },
+  {
+    id: 'water',
+    title: 'Питна вода',
+    icon: 'water',
+  },
+  {
+    id: 'forest',
+    title: 'Ліс поруч',
+    icon: 'forest',
+  },
+  {
+    id: 'lake',
+    title: 'Водойма поруч',
+    icon: 'lake',
+  },
+  {
+    id: 'fireplace',
+    title: 'Місце для кострища',
+    icon: 'campfire',
+  },
+  {
+    id: 'collect_firewood',
+    title: 'Можна назбирати дрова',
+    icon: 'firewood',
+  },
+  {
+    id: 'has_tables',
+    title: 'Наявність столів, альтанки',
+    icon: 'gazebo',
+  },
+  {
+    id: 'shade',
+    title: 'Тінь',
+    icon: 'shade',
+  },
+  {
+    id: 'parking',
+    title: 'Паркування',
+    icon: 'parking',
+  },
+  {
+    id: 'mobile',
+    title: 'Мобільний звʼязок',
+    icon: 'signal',
+  },
+  {
+    id: 'trash',
+    title: 'Смітники',
+    icon: 'trash',
+  },
+];

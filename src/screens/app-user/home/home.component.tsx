@@ -11,8 +11,8 @@ import MapView, { PROVIDER_GOOGLE } from 'react-native-maps';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { AppIcon } from 'assets/index';
 import { APP_ICONS } from 'assets/icon.data';
+import { navigate } from 'shared/navigation/root-navigator.config';
 import { useStyles } from './home.styles';
-import {navigate} from "shared/navigation/root-navigator.config";
 
 type CampType = 'tent' | 'hammock' | 'car';
 
@@ -96,7 +96,7 @@ const Home = () => {
       <Pressable
         style={[styles.fab, { bottom: insets.bottom + 24 }]}
         onPress={() => {
-         navigate("AddCampingPace");
+          navigate('AddCampingPace');
         }}
       >
         <Text style={styles.fabIcon}>＋</Text>
