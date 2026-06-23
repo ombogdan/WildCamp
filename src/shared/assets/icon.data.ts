@@ -24,4 +24,5 @@ export const APP_ICONS = Object.freeze({
     'pin': require('shared/assets/icons/pin.png'),
     'help': require('shared/assets/icons/help.png'),
     'camping': require('shared/assets/icons/camping.png'),
+    'camera': require('shared/assets/icons/camera.png'),
 });

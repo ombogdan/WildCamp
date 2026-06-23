@@ -149,3 +149,4 @@ export const AMENITIES: {
 export const KYIV = { latitude: 50.45, longitude: 30.52 };
 export const CLUSTER_THRESHOLD = 2;
 export const CLUSTER_MIN_DELTA = 0.5;
+export const MAX_PHOTOS = 10;

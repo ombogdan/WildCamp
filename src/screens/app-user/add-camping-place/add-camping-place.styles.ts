@@ -205,7 +205,51 @@ export const useStyles = createStyles(({ theme, scale }: any) =>
     loader: {
       height: scale(65),
       width: scale(65),
-      top: scale(3)
+      top: scale(3),
+    },
+    photosRow: {
+      flexDirection: 'row',
+      flexWrap: 'wrap',
+      gap: scale(12),
+    },
+    // кнопка "Додати" — пунктирна рамка
+    addPhotoBtn: {
+      width: scale(96),
+      height: scale(96),
+      borderRadius: scale(16),
+      borderWidth: scale(1.5),
+      borderStyle: 'dashed',
+      borderColor: theme.palette.inputBorder,
+      alignItems: 'center',
+      justifyContent: 'center',
+      gap: scale(6),
+    },
+    addPhotoText: {
+      fontSize: scale(13),
+      fontWeight: '600',
+      color: theme.palette.forest,
+    },
+    photoThumb: {
+      width: scale(96),
+      height: scale(96),
+      borderRadius: scale(16),
+      overflow: 'hidden',
+      position: 'relative',
+    },
+    photoImage: {
+      width: '100%',
+      height: '100%',
+    },
+    photoRemove: {
+      position: 'absolute',
+      top: scale(6),
+      right: scale(6),
+      width: scale(26),
+      height: scale(26),
+      borderRadius: scale(13),
+      backgroundColor: 'rgba(40, 46, 41, 0.75)',
+      alignItems: 'center',
+      justifyContent: 'center',
     },
   }),
 );

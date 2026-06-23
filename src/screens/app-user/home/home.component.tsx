@@ -59,6 +59,7 @@ const Home = () => {
     if (debounceRef.current) clearTimeout(debounceRef.current);
 
     debounceRef.current = setTimeout(async () => {
+      // eslint-disable-next-line no-plusplus
       const myReqId = ++reqIdRef.current;
       const bounds = boundsFromRegion(region);
 
@@ -118,7 +119,7 @@ const Home = () => {
             longitude={p.longitude}
             campingTypes={p.camping_types}
             onPress={() => {
-              // тут пізніше — bottom sheet з прев'ю місця
+              // тут пізніше — bottom sheet
             }}
           />
         ))}

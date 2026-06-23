@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import {
+  Image,
   PermissionsAndroid,
   Platform,
   SafeAreaView,
@@ -17,7 +18,7 @@ import {
   AMENITIES,
   CAMPING_TYPES,
   KYIV,
-  LOTTIE_WHITE_LOADER,
+  LOTTIE_WHITE_LOADER, MAX_PHOTOS,
 } from 'constants/index';
 import { Box } from 'ui-kit/box';
 import Geolocation from '@react-native-community/geolocation';
@@ -26,6 +27,8 @@ import Toast from 'react-native-toast-message';
 import { goBack } from 'shared/navigation/root-navigator.config';
 import wait from 'utils/wait';
 import Lottie from 'lottie-react-native';
+import {launchImageLibrary} from "react-native-image-picker";
+import {uploadPhoto} from "store/upload-photo";
 import { useStyles } from './add-camping-place.styles';
 
 const AddCampingPlace = () => {
@@ -121,6 +124,15 @@ const AddCampingPlace = () => {
       return;
     }
 
+    let photoUrls: string[] = [];
+    try {
+      photoUrls = await Promise.all(photos.map((p) => uploadPhoto(p.uri)));
+    } catch (e: any) {
+      setSubmitting(false);
+      Toast.show({ type: 'error', text1: 'Не вдалося завантажити фото', text2: e.message });
+      return;
+    }
+
     const { error } = await supabase.from('camping_places').insert({
       name: name.trim(),
       description: description.trim() || null,
@@ -129,6 +141,7 @@ const AddCampingPlace = () => {
       longitude: selectedLocation.longitude,
       camping_types: campingTypes,
       amenities,
+      photo_urls: photoUrls,
     });
     setSubmitting(false);
 
@@ -145,6 +158,21 @@ const AddCampingPlace = () => {
     await wait(1500);
     goBack();
   };
+
+  const handlePickPhoto = async () => {
+    const result = await launchImageLibrary({
+      mediaType: 'photo',
+      selectionLimit: MAX_PHOTOS - photos.length,
+      maxWidth: 1600,        // ресайз прямо в пікері
+      maxHeight: 1600,
+      quality: 0.7,          // якість 0..1
+    });
+    if (result.didCancel || !result.assets) return;
+    setPhotos((prev) => [...prev, ...result.assets!].slice(0, MAX_PHOTOS));
+  };
+
+  const removePhoto = (uri: string) =>
+    setPhotos((prev) => prev.filter((p) => p.uri !== uri));
 
   return (
     <SafeAreaView style={styles.container}>
@@ -224,6 +252,26 @@ const AddCampingPlace = () => {
               placeholderTextColor={theme.palette.muted}
               style={styles.commentInput}
             />
+          </View>
+
+          <View style={styles.section}>
+            <Text style={styles.label}>Фото</Text>
+            <View style={styles.photosRow}>
+              {photos.length < MAX_PHOTOS && (
+                <TouchableOpacity style={styles.addPhotoBtn} onPress={handlePickPhoto}>
+                  <AppIcon name="camera" size={26} color="forest" />
+                  <Text style={styles.addPhotoText}>Додати</Text>
+                </TouchableOpacity>
+              )}
+              {photos.map((p) => (
+                <View key={p.uri} style={styles.photoThumb}>
+                  <Image source={{ uri: p.uri }} style={styles.photoImage} />
+                  <TouchableOpacity style={styles.photoRemove} onPress={() => removePhoto(p.uri)}>
+                    <AppIcon name="close" size={14} color="white" />
+                  </TouchableOpacity>
+                </View>
+              ))}
+            </View>
           </View>
 
           <View style={styles.section}>
